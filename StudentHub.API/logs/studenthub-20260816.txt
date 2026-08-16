@@ -1,0 +1,88 @@
+2026-08-16 21:33:43.574 +02:00 [INF] Executed DbCommand (36ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+PRAGMA journal_mode = 'wal';
+2026-08-16 21:33:45.526 +02:00 [INF] Executed DbCommand (15ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "__EFMigrationsHistory" (
+    "MigrationId" TEXT NOT NULL CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY,
+    "ProductVersion" TEXT NOT NULL
+);
+2026-08-16 21:33:45.551 +02:00 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "name" = '__EFMigrationsHistory' AND "type" = 'table';
+2026-08-16 21:33:45.563 +02:00 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2026-08-16 21:33:47.305 +02:00 [INF] Applying migration '20260816193315_InitialCreate'.
+2026-08-16 21:33:48.032 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Departments" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Departments" PRIMARY KEY,
+    "Name" TEXT NOT NULL,
+    "Code" TEXT NOT NULL
+);
+2026-08-16 21:33:49.073 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Students" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Students" PRIMARY KEY,
+    "FirstName" TEXT NOT NULL,
+    "LastName" TEXT NOT NULL,
+    "StudentNumber" TEXT NOT NULL,
+    "Email" TEXT NOT NULL
+);
+2026-08-16 21:33:50.057 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Courses" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Courses" PRIMARY KEY,
+    "Code" TEXT NOT NULL,
+    "Title" TEXT NOT NULL,
+    "Credits" INTEGER NOT NULL,
+    "DepartmentId" TEXT NOT NULL,
+    CONSTRAINT "FK_Courses_Departments_DepartmentId" FOREIGN KEY ("DepartmentId") REFERENCES "Departments" ("Id") ON DELETE RESTRICT
+);
+2026-08-16 21:33:51.135 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Lecturers" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Lecturers" PRIMARY KEY,
+    "FirstName" TEXT NOT NULL,
+    "LastName" TEXT NOT NULL,
+    "Email" TEXT NOT NULL,
+    "DepartmentId" TEXT NOT NULL,
+    CONSTRAINT "FK_Lecturers_Departments_DepartmentId" FOREIGN KEY ("DepartmentId") REFERENCES "Departments" ("Id") ON DELETE RESTRICT
+);
+2026-08-16 21:33:51.471 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "Enrollments" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Enrollments" PRIMARY KEY,
+    "EnrollmentDate" TEXT NOT NULL,
+    "StudentId" TEXT NOT NULL,
+    "CourseId" TEXT NOT NULL,
+    CONSTRAINT "FK_Enrollments_Courses_CourseId" FOREIGN KEY ("CourseId") REFERENCES "Courses" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_Enrollments_Students_StudentId" FOREIGN KEY ("StudentId") REFERENCES "Students" ("Id") ON DELETE CASCADE
+);
+2026-08-16 21:33:52.535 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE TABLE "LecturerCourses" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_LecturerCourses" PRIMARY KEY,
+    "LecturerId" TEXT NOT NULL,
+    "CourseId" TEXT NOT NULL,
+    CONSTRAINT "FK_LecturerCourses_Courses_CourseId" FOREIGN KEY ("CourseId") REFERENCES "Courses" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_LecturerCourses_Lecturers_LecturerId" FOREIGN KEY ("LecturerId") REFERENCES "Lecturers" ("Id") ON DELETE CASCADE
+);
+2026-08-16 21:33:53.987 +02:00 [INF] Executed DbCommand (53ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Courses_Code" ON "Courses" ("Code");
+2026-08-16 21:33:54.004 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Courses_DepartmentId" ON "Courses" ("DepartmentId");
+2026-08-16 21:33:54.017 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Departments_Code" ON "Departments" ("Code");
+2026-08-16 21:33:54.029 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Enrollments_CourseId" ON "Enrollments" ("CourseId");
+2026-08-16 21:33:54.040 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Enrollments_StudentId_CourseId" ON "Enrollments" ("StudentId", "CourseId");
+2026-08-16 21:33:54.052 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_LecturerCourses_CourseId" ON "LecturerCourses" ("CourseId");
+2026-08-16 21:33:54.084 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_LecturerCourses_LecturerId_CourseId" ON "LecturerCourses" ("LecturerId", "CourseId");
+2026-08-16 21:33:54.099 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE INDEX "IX_Lecturers_DepartmentId" ON "Lecturers" ("DepartmentId");
+2026-08-16 21:33:54.120 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Lecturers_Email" ON "Lecturers" ("Email");
+2026-08-16 21:33:55.343 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Students_Email" ON "Students" ("Email");
+2026-08-16 21:33:56.052 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+CREATE UNIQUE INDEX "IX_Students_StudentNumber" ON "Students" ("StudentNumber");
+2026-08-16 21:33:57.015 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260816193315_InitialCreate', '8.0.8');
